@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class AuthController extends Controller
 {
@@ -20,7 +21,7 @@ class AuthController extends Controller
                 'errors' => $ve->errors(),
                 'data' => [],
             ];
-            return response()->json($json_response);
+            return response()->json($json_response, 422);
         }
         $user_auth = Auth::attempt([
             'email' => $request->email,
@@ -35,7 +36,7 @@ class AuthController extends Controller
                 ],
                 'data' => []
             ];
-            return response()->json($json_response);
+            return response()->json($json_response, 401);
         }
     
         $user = Auth::user();
@@ -51,5 +52,44 @@ class AuthController extends Controller
         ];
     
         return response()->json($json_response);
+    }
+
+    public function register(Request $request) {
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:8|confirmed',
+            ]);
+        } catch (ValidationException $ve) {
+            return response()->json([
+                'success' => false,
+                'errors' => $ve->errors(),
+                'data' => [],
+            ], 422);
+        }
+        
+        try {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => bcrypt($request->password),
+            ]);    
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'errors' => [
+                    'message' => $th->getMessage(),
+                ],
+                'data' => [],
+            ], 500);
+        }
+        return response()->json([
+            'success' => true,
+            'errors' => [],
+            'data' => [
+                'user' => $user,
+            ],
+        ]);
     }
 }
