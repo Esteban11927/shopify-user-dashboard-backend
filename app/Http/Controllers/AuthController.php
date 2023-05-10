@@ -47,7 +47,8 @@ class AuthController extends Controller
             'success' => true,
             'errors' => [],
             'data' => [
-                'access_token' => $token
+                'access_token' => $token,
+                'user' => Auth::guard('sanctum')->user(),
             ]
         ];
     
@@ -91,5 +92,22 @@ class AuthController extends Controller
                 'user' => $user,
             ],
         ]);
+    }
+
+    public function check_user_logged_in(Request $request) {
+        $json_response = [
+            'success' => true,
+            'errors' => [],
+            'data' => [
+                'message' => "User is logged in",
+            ]
+        ];
+        
+        if (Auth::guard('sanctum')->check()) {
+            return response()->json($json_response, 200);
+        } else {
+            $json_response['data']['message'] = "User is not logged in";
+            return response()->json($json_response, 401);
+        }
     }
 }

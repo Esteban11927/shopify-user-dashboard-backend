@@ -16,14 +16,13 @@ use App\Http\Controllers\AuthController;
 |
 */
 
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 Route::post('/register', [AuthController::class, 'register']);
 
+//returns 405 if user not logged in. 200 if is logged in
+Route::get('/user-logged-in', [AuthController::class, 'check_user_logged_in']);
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
-});
-
-Route::get('/csrf-token', function() {
-    return response(null);
 });
