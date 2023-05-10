@@ -32,7 +32,7 @@ class AuthController extends Controller
             $json_response = [
                 'success' => false,
                 'errors' => [
-                    'login' => ['these credentials don\'t match our records'],
+                    'login' => ['These credentials don\'t match our records'],
                 ],
                 'data' => []
             ];
@@ -102,7 +102,7 @@ class AuthController extends Controller
                 'message' => "User is logged in",
             ]
         ];
-        
+
         if (Auth::guard('sanctum')->check()) {
             return response()->json($json_response, 200);
         } else {
