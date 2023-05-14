@@ -18,6 +18,8 @@ use App\Http\Controllers\AuthController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
+Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout'])->name('logout');
+
 Route::post('/register', [AuthController::class, 'register']);
 
 //returns 405 if user not logged in. 200 if is logged in
